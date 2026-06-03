@@ -33,15 +33,12 @@
       overflow: hidden;
     }
 
-    /* Ambient glow background */
     body::before {
       content: '';
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 700px;
-      height: 700px;
+      width: 700px; height: 700px;
       background: radial-gradient(circle, rgba(0,212,170,0.05) 0%, transparent 70%);
       pointer-events: none;
       transition: background 1s ease;
@@ -49,13 +46,14 @@
     body.warning::before { background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%); }
     body.danger::before  { background: radial-gradient(circle, rgba(239,68,68,0.1) 0%, transparent 70%); }
 
+    /* ── HEADER (modo normal) ── */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
       padding: 1.2rem 2rem;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      justify-content: space-between;
       font-size: 0.8rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -63,7 +61,9 @@
       border-bottom: 1px solid var(--border);
       background: rgba(13,15,20,0.8);
       backdrop-filter: blur(12px);
+      z-index: 10;
     }
+    .header-left { display: flex; align-items: center; gap: 0.6rem; }
     header span.dot {
       width: 8px; height: 8px;
       border-radius: 50%;
@@ -73,11 +73,27 @@
     }
     body.danger header span.dot { background: var(--danger); }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
+    /* ── BOTÃO POPUP ── */
+    .popup-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.3rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    .popup-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .popup-btn svg { flex-shrink: 0; }
 
+    /* ── CARD ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -89,11 +105,9 @@
       position: relative;
     }
 
-    /* SVG ring */
     .ring-wrap {
       position: relative;
-      width: 220px;
-      height: 220px;
+      width: 220px; height: 220px;
       margin: 0 auto 2rem;
     }
     .ring-wrap svg {
@@ -140,7 +154,6 @@
       min-height: 1.5rem;
     }
 
-    /* Controls */
     .presets {
       display: flex;
       gap: 0.5rem;
@@ -212,19 +225,11 @@
       transition: all 0.2s;
       letter-spacing: 0.03em;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: #000;
-      min-width: 130px;
-    }
+    .btn-primary { background: var(--accent); color: #000; min-width: 130px; }
     .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
-    .btn-secondary {
-      background: var(--border);
-      color: var(--muted);
-    }
+    .btn-secondary { background: var(--border); color: var(--muted); }
     .btn-secondary:hover { color: var(--text); background: #2a3244; }
 
-    /* Done overlay */
     .done-overlay {
       display: none;
       position: absolute;
@@ -237,10 +242,7 @@
       gap: 1rem;
     }
     .done-overlay.show { display: flex; }
-    .done-icon {
-      font-size: 3rem;
-      animation: bounce 0.6s ease;
-    }
+    .done-icon { font-size: 3rem; animation: bounce 0.6s ease; }
     .done-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 2.5rem;
@@ -249,28 +251,96 @@
     }
     .done-sub { color: var(--muted); font-size: 0.85rem; }
 
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
     @keyframes bounce {
       0%   { transform: scale(0.5); opacity: 0; }
       70%  { transform: scale(1.2); }
       100% { transform: scale(1); opacity: 1; }
     }
-
-    /* Shake on danger */
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       20%,60% { transform: translateX(-6px); }
       40%,80% { transform: translateX(6px); }
     }
     .shake { animation: shake 0.4s ease; }
+
+    /* ══════════════════════════════════════
+       MODO POPUP — janela flutuante compacta
+       Ativado via ?popup=1 na URL
+    ══════════════════════════════════════ */
+    body.popup-mode {
+      padding: 0;
+      min-height: 100vh;
+      justify-content: flex-start;
+    }
+    body.popup-mode::before { display: none; }
+    body.popup-mode header { display: none; }
+
+    body.popup-mode .card {
+      border-radius: 0;
+      border: none;
+      padding: 1rem 1.2rem 1.2rem;
+      max-width: 100%;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    body.popup-mode .session-label { font-size: 0.65rem; margin-bottom: 0.2rem; }
+    body.popup-mode .session-name  { font-size: 0.85rem; margin-bottom: 0.8rem; }
+
+    body.popup-mode .ring-wrap {
+      width: 130px; height: 130px;
+      margin-bottom: 0.8rem;
+    }
+    body.popup-mode .ring-wrap svg { width: 130px; height: 130px; }
+    body.popup-mode .time-display  { font-size: 3rem; }
+
+    body.popup-mode .presets { gap: 0.3rem; margin-bottom: 0.7rem; }
+    body.popup-mode .preset-btn { padding: 0.25rem 0.6rem; font-size: 0.72rem; }
+
+    body.popup-mode .custom-row { gap: 0.3rem; margin-bottom: 0.8rem; }
+    body.popup-mode .custom-row input { padding: 0.35rem 0.6rem; font-size: 0.75rem; }
+    body.popup-mode .set-btn { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
+
+    body.popup-mode .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    body.popup-mode .btn-primary { min-width: 90px; }
+
+    /* Barra de cor no topo do popup para indicar estado */
+    body.popup-mode .popup-statusbar {
+      height: 4px;
+      background: var(--accent);
+      margin: -1rem -1.2rem 1rem;
+      transition: background 0.5s;
+    }
+    body.popup-mode.warning .popup-statusbar { background: var(--warn); }
+    body.popup-mode.danger  .popup-statusbar { background: var(--danger); }
+
+    .popup-statusbar { display: none; }
+    body.popup-mode .popup-statusbar { display: block; }
   </style>
 </head>
 <body>
   <header>
-    <span class="dot"></span>
-    Timer de Reunião
+    <div class="header-left">
+      <span class="dot"></span>
+      Timer de Reunião
+    </div>
+    <button class="popup-btn" onclick="openPopup()" title="Abre o timer em uma janela pequena que fica por cima de todas as outras telas">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="4" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M7 1h8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 7L15 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      Janela flutuante
+    </button>
   </header>
 
   <div class="card" id="card">
+    <div class="popup-statusbar"></div>
+
     <p class="session-label">Sessão atual</p>
     <p class="session-name" id="sessionName">—</p>
 
@@ -278,28 +348,27 @@
       <svg viewBox="0 0 220 220" width="220" height="220">
         <circle class="ring-bg" cx="110" cy="110" r="98" />
         <circle class="ring-fg" id="ringFg" cx="110" cy="110" r="98"
-          stroke-dasharray="615.75"
-          stroke-dashoffset="0" />
+          stroke-dasharray="615.75" stroke-dashoffset="0" />
       </svg>
       <div class="time-display" id="display">00:00</div>
     </div>
 
     <div class="presets">
-      <button class="preset-btn" data-min="2" data-name="Check-in">2 min</button>
-      <button class="preset-btn" data-min="5" data-name="Discussão">5 min</button>
+      <button class="preset-btn" data-min="2"  data-name="Check-in">2 min</button>
+      <button class="preset-btn" data-min="5"  data-name="Discussão">5 min</button>
       <button class="preset-btn" data-min="10" data-name="Apresentação">10 min</button>
       <button class="preset-btn" data-min="15" data-name="Sessão">15 min</button>
       <button class="preset-btn" data-min="30" data-name="Reunião">30 min</button>
     </div>
 
     <div class="custom-row">
-      <input type="number" id="customMin" placeholder="Minutos" min="1" max="999" />
+      <input type="number" id="customMin"   placeholder="Minutos" min="1" max="999" />
       <input type="text"   id="customLabel" placeholder="Nome da sessão (opcional)" />
       <button class="set-btn" onclick="applyCustom()">Definir</button>
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">Iniciar</button>
+      <button class="btn btn-primary"   id="startBtn" onclick="toggleTimer()">Iniciar</button>
       <button class="btn btn-secondary" onclick="resetTimer()">Reiniciar</button>
     </div>
 
@@ -312,13 +381,13 @@
   </div>
 
   <script>
-    const CIRCUMFERENCE = 2 * Math.PI * 98; // ≈ 615.75
+    const CIRCUMFERENCE = 2 * Math.PI * 98;
 
-    let totalSeconds = 0;
-    let remaining   = 0;
-    let interval    = null;
-    let running     = false;
-    let sessionLabel = '';
+    let totalSeconds  = 0;
+    let remaining     = 0;
+    let interval      = null;
+    let running       = false;
+    let sessionLabel  = '';
 
     const display   = document.getElementById('display');
     const startBtn  = document.getElementById('startBtn');
@@ -328,6 +397,24 @@
     const doneSub   = document.getElementById('doneSub');
     const card      = document.getElementById('card');
     const body      = document.body;
+
+    // ── Detecta modo popup ──
+    const isPopup = new URLSearchParams(location.search).get('popup') === '1';
+    if (isPopup) body.classList.add('popup-mode');
+
+    // ── Abre janela flutuante ──
+    function openPopup() {
+      const url  = location.href.split('?')[0] + '?popup=1';
+      const w    = 300;
+      const h    = 480;
+      const left = screen.width  - w - 20;
+      const top  = screen.height - h - 60;
+      window.open(url, 'TimerPopup',
+        `width=${w},height=${h},left=${left},top=${top},` +
+        `resizable=yes,scrollbars=no,toolbar=no,menubar=no,` +
+        `location=no,status=no,alwaysRaised=yes`
+      );
+    }
 
     function fmt(s) {
       const m = Math.floor(s / 60);
@@ -340,8 +427,9 @@
       totalSeconds = minutes * 60;
       remaining    = totalSeconds;
       sessionLabel = label || `${minutes} min`;
-      display.textContent = fmt(remaining);
-      sessionEl.textContent = sessionLabel;
+      display.textContent     = fmt(remaining);
+      sessionEl.textContent   = sessionLabel;
+      document.title          = `${fmt(remaining)} — Timer`;
       updateRing();
       updateState();
     }
@@ -354,7 +442,7 @@
     function updateState() {
       const pct = totalSeconds > 0 ? remaining / totalSeconds : 1;
       body.classList.remove('warning','danger');
-      if (pct <= 0.1)      body.classList.add('danger');
+      if      (pct <= 0.1) body.classList.add('danger');
       else if (pct <= 0.3) body.classList.add('warning');
     }
 
@@ -380,10 +468,10 @@
       }
       remaining--;
       display.textContent = fmt(remaining);
+      document.title      = `${fmt(remaining)} — Timer`;
       updateRing();
       updateState();
 
-      // Shake card at 10s warning
       if (remaining === 10) {
         card.classList.add('shake');
         card.addEventListener('animationend', () => card.classList.remove('shake'), { once: true });
@@ -393,7 +481,7 @@
     function finish() {
       doneSub.textContent = sessionLabel ? `Sessão: ${sessionLabel}` : '';
       overlay.classList.add('show');
-      // Browser notification (if permitted)
+      document.title = '⏰ Tempo esgotado!';
       if (Notification.permission === 'granted') {
         new Notification('⏰ Tempo esgotado!', { body: sessionLabel });
       }
@@ -401,9 +489,10 @@
 
     function resetTimer() {
       clearInterval(interval);
-      running = false;
+      running  = false;
       remaining = totalSeconds;
-      display.textContent = totalSeconds ? fmt(remaining) : '00:00';
+      display.textContent  = totalSeconds ? fmt(remaining) : '00:00';
+      document.title       = 'Timer de Reunião';
       startBtn.textContent = 'Iniciar';
       overlay.classList.remove('show');
       body.classList.remove('warning','danger');
@@ -418,7 +507,6 @@
       setTimer(min, lbl || `${min} min`);
     }
 
-    // Preset buttons
     document.querySelectorAll('.preset-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
@@ -427,14 +515,12 @@
       });
     });
 
-    // Enter key on custom inputs
     ['customMin','customLabel'].forEach(id => {
       document.getElementById(id).addEventListener('keydown', e => {
         if (e.key === 'Enter') applyCustom();
       });
     });
 
-    // Request notification permission silently
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
